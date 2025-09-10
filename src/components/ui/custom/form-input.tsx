@@ -1,4 +1,3 @@
-// components/form-fields.tsx
 import {
   FormControl,
   FormField,
@@ -8,6 +7,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import type { LucideIcon } from "lucide-react";
 import type { Control, FieldPath, FieldValues } from "react-hook-form";
 
 interface BaseProps<T extends FieldValues> {
@@ -24,7 +24,12 @@ export function FormInput<T extends FieldValues>({
   label,
   placeholder,
   disabled,
-}: BaseProps<T> & { type?: string }) {
+  type = "text",
+  icon: Icon,
+}: BaseProps<T> & {
+  type?: string;
+  icon?: LucideIcon;
+}) {
   return (
     <FormField
       control={control}
@@ -33,7 +38,18 @@ export function FormInput<T extends FieldValues>({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input {...field} placeholder={placeholder} disabled={disabled} />
+            <div className="relative">
+              {Icon && (
+                <Icon className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+              )}
+              <Input
+                {...field}
+                type={type}
+                placeholder={placeholder}
+                disabled={disabled}
+                className={Icon ? "pl-10" : ""}
+              />
+            </div>
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -48,6 +64,7 @@ export function FormTextarea<T extends FieldValues>({
   label,
   placeholder,
   disabled,
+  rows,
 }: BaseProps<T> & { rows?: number }) {
   return (
     <FormField
@@ -61,6 +78,7 @@ export function FormTextarea<T extends FieldValues>({
               {...field}
               placeholder={placeholder}
               disabled={disabled}
+              rows={rows}
             />
           </FormControl>
           <FormMessage />

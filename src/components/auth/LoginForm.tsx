@@ -1,14 +1,5 @@
 import { Button } from "@/components/ui/button";
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { useAuth } from "@/contexts/AuthContext";
 import { loginSchema, type LoginFormData } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +8,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import { FormInput } from "../ui/custom/form-input";
 
 export const LoginForm: React.FC = () => {
   const { login } = useAuth();
@@ -53,51 +45,27 @@ export const LoginForm: React.FC = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {/* Email */}
-        <FormField
+        <FormInput
           control={form.control}
           name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
-                  <Input
-                    {...field}
-                    type="email"
-                    placeholder="Enter your email"
-                    className="pl-10"
-                    disabled={isSubmitting}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Email"
+          placeholder="Enter your email"
+          disabled={isSubmitting}
+          type="email"
+          icon={Mail}
         />
+
         {/* Password */}
-        <FormField
+        <FormInput
           control={form.control}
           name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
-                  <Input
-                    {...field}
-                    type="password"
-                    placeholder="Enter your password"
-                    className="pl-10"
-                    disabled={isSubmitting}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Password"
+          placeholder="Enter your password"
+          disabled={isSubmitting}
+          type="password"
+          icon={Lock}
         />
+
         {/* Submit Button */}
         <Button
           type="submit"
