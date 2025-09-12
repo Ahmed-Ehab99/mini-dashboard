@@ -4,34 +4,39 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ActionButton from "@/components/ui/custom/action-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiService } from "@/services/api";
+import { useQuery } from "@tanstack/react-query";
 import { Activity, Newspaper, TrendingUp, UserPlus, Users } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router";
-import { toast } from "sonner";
 
-const Dashboard: React.FC = () => {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [loading, setLoading] = useState(true);
+const Dashboard: React.FC = React.memo(() => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const statsData = await apiService.getStats();
-        setStats(statsData);
-      } catch (error) {
-        console.error("Failed to fetch stats:", error);
-        toast.error("Failed to load dashboard stats.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Use React Query for better caching and performance
+  const {
+    data: stats,
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ["dashboard-stats"],
+    queryFn: apiService.getStats,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (renamed from cacheTime)
+    retry: 3,
+  });
 
-    fetchStats();
-  }, []);
+  // Memoize navigation handlers
+  const handleNavigateToUsers = useCallback(() => {
+    navigate("/users");
+  }, [navigate]);
 
-  if (loading) {
-    return (
+  const handleNavigateToPosts = useCallback(() => {
+    navigate("/posts");
+  }, [navigate]);
+
+  // Memoize the loading skeleton
+  const loadingSkeleton = useMemo(
+    () => (
       <div className="space-y-6">
         <div className="flex flex-col space-y-2 md:flex-row md:items-center md:justify-between">
           <Skeleton className="h-9 w-59" />
@@ -48,6 +53,22 @@ const Dashboard: React.FC = () => {
           ))}
         </div>
       </div>
+    ),
+    [],
+  );
+
+  if (loading) {
+    return loadingSkeleton;
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="text-center">
+          <p className="mb-4 text-red-500">Failed to load dashboard stats.</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
     );
   }
 
@@ -61,7 +82,7 @@ const Dashboard: React.FC = () => {
           </h1>
           <ActionButton
             text="Manage Users"
-            onClick={() => navigate("/users")}
+            onClick={handleNavigateToUsers}
             className="w-fit"
             Icon={UserPlus}
           />
@@ -71,17 +92,17 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           <StatsCard
             title="Total Users"
-            value={stats?.totalUsers || 0}
+            value={(stats as Stats)?.totalUsers || 0}
             description="All registered users"
             icon={Users}
             trend={{
-              value: stats?.userGrowth || "+0%",
+              value: (stats as Stats)?.userGrowth || "+0%",
               isPositive: true,
             }}
           />
           <StatsCard
             title="Active Users"
-            value={stats?.activeUsers || 0}
+            value={(stats as Stats)?.activeUsers || 0}
             description="Currently active"
             icon={Activity}
             trend={{
@@ -91,7 +112,7 @@ const Dashboard: React.FC = () => {
           />
           <StatsCard
             title="New This Month"
-            value={stats?.newUsersThisMonth || 0}
+            value={(stats as Stats)?.newUsersThisMonth || 0}
             description="Recent registrations"
             icon={UserPlus}
             trend={{
@@ -121,7 +142,7 @@ const Dashboard: React.FC = () => {
               <Button
                 variant="outline"
                 className="w-full justify-start"
-                onClick={() => navigate("/users")}
+                onClick={handleNavigateToUsers}
               >
                 <Users className="mr-2 h-4 w-4" />
                 View All Users
@@ -129,7 +150,7 @@ const Dashboard: React.FC = () => {
               <Button
                 variant="outline"
                 className="w-full justify-start"
-                onClick={() => navigate("/posts")}
+                onClick={handleNavigateToPosts}
               >
                 <Newspaper className="mr-2 h-4 w-4" />
                 View All Posts
@@ -177,6 +198,8 @@ const Dashboard: React.FC = () => {
       </div>
     </>
   );
-};
+});
+
+Dashboard.displayName = "Dashboard";
 
 export default Dashboard;
