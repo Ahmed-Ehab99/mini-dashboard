@@ -300,3 +300,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Scroll behavior */
+.hide-scroll {
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scroll::-webkit-scrollbar {
+  width: 0; /* Chrome, Safari */
+  height: 0;
+}

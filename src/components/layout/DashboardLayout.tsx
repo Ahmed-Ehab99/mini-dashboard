@@ -66,7 +66,7 @@ export const DashboardLayout: React.FC = () => {
         </header>
 
         {/* Main content */}
-        <main className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
+        <main className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 hide-scroll">
           <div className="max-w-full">
             <Outlet />
           </div>
