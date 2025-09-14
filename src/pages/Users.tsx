@@ -63,7 +63,7 @@ const Users: React.FC = React.memo(() => {
   }, [userToDelete, deleteUserMutation]);
 
   const handleUserSaved = useCallback(
-    (_savedUser: UserApi) => {
+    () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       setIsDialogOpen(false);
       setEditingUser(null);
@@ -214,6 +214,7 @@ const Users: React.FC = React.memo(() => {
         confirmDelete={confirmDelete}
         itemToDelete={userToDelete}
         getLabel={(user) => user.name}
+        itemType="User"
       />
     </>
   );

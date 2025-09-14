@@ -15,6 +15,7 @@ interface DeleteDialogProps<T> {
   confirmDelete: () => Promise<void>;
   itemToDelete: T | null;
   getLabel: (item: T) => string;
+  itemType: string;
 }
 
 const DeleteDialog = <T,>({
@@ -23,6 +24,7 @@ const DeleteDialog = <T,>({
   confirmDelete,
   itemToDelete,
   getLabel,
+  itemType,
 }: DeleteDialogProps<T>) => {
   return (
     <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -34,8 +36,8 @@ const DeleteDialog = <T,>({
             <span className="font-medium">
               {itemToDelete ? getLabel(itemToDelete) : ""}
             </span>
-            ? This action cannot be undone and will permanently remove the post
-            from the system.
+            ? This action cannot be undone and will permanently remove the{" "}
+            {itemType.toLowerCase()} from the system.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -44,9 +46,9 @@ const DeleteDialog = <T,>({
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={confirmDelete}
-            className="bg-destructive cursor-pointer text-destructive-foreground hover:bg-destructive/90"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer"
           >
-            Delete Post
+            Delete {itemType}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

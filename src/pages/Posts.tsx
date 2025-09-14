@@ -229,6 +229,7 @@ const Posts: React.FC = React.memo(() => {
         confirmDelete={confirmDelete}
         itemToDelete={postToDelete}
         getLabel={(post) => post.title}
+        itemType="Post"
       />
     </>
   );
